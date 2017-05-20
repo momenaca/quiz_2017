@@ -4,8 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var partials = require('express-partials');
+var methodOverride = require('method-override');
 
 var index = require('./routes/index'); // Importar routers del directorio pasado como argumento
 
@@ -21,6 +21,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json()); // Instalar MWs que procesan partes de req o res
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index); // Instalar MWs routers que atienden a las rutas específicas
