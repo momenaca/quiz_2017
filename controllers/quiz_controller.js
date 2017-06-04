@@ -248,21 +248,25 @@ exports.randomplay = function (req, res, next) {
 // GET /quizzes/randomcheck/:quizId
 exports.randomcheck = function (req, res, next) {
     var result = false;
+    var punt = 0;
     models.Quiz.findById(req.params.quizId)
         .then(function (quiz) {
             if (quiz) {
                 if(quiz.answer === req.query.answer) {
                     result = true;
-                    if(session.Id) {
-                        console.log("SEGUNDA TRAZA   " + session.Id);
+                    if(session && session.Id) {
+                        //console.log("SEGUNDA TRAZA   " + session.Id);
                         array.push(session.Id);
+                    }
+                    else {
+                        punt = 1;
                     }
                 }
                 if(!result){
                     array.splice(0,array.length);
                 }
                 res.render('quizzes/randomresult',{
-                    score: session.Id ? 1 : array.length,
+                    score: session ? array.length : punt,
                     result: result,
                     answer: req.query.answer
                 })
