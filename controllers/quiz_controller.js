@@ -254,6 +254,9 @@ exports.randomcheck = function (req, res, next) {
                     //console.log("SEGUNDA TRAZA   "+session.Id);
                     array.push(session.Id);
                 }
+                if(!result){
+                    array.splice(0,array.length);
+                }
                 res.render('quizzes/randomresult',{
                     score: array.length,
                     result: result,
