@@ -203,7 +203,9 @@ exports.randomplay = function (req, res, next) {
             }
             else {
                 if(!session.Id){
-                    quizId = 1; // Primer quiz
+                    console.log("EMPIEZO");
+                    quizId = Math.floor(Math.random()*count) + 1;
+                    //quizId = 1; // Primer quiz
                 }
                 else{
                     //console.log("PRIMERA TRAZA 1   "+quizId);
@@ -251,14 +253,16 @@ exports.randomcheck = function (req, res, next) {
             if (quiz) {
                 if(quiz.answer === req.query.answer) {
                     result = true;
-                    //console.log("SEGUNDA TRAZA   "+session.Id);
-                    array.push(session.Id);
+                    if(session.Id) {
+                        console.log("SEGUNDA TRAZA   " + session.Id);
+                        array.push(session.Id);
+                    }
                 }
                 if(!result){
                     array.splice(0,array.length);
                 }
                 res.render('quizzes/randomresult',{
-                    score: array.length,
+                    score: session.Id ? 1 : array.length,
                     result: result,
                     answer: req.query.answer
                 })
