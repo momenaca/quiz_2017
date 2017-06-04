@@ -17,7 +17,6 @@ var app = express(); // Crear aplicación
 app.set('views', path.join(__dirname, 'views')); // Define el directorio de vistas
 app.set('view engine', 'ejs'); // Instala renderizador de vistas EJS
 
-app.use(partials());
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json()); // Instalar MWs que procesan partes de req o res
@@ -30,8 +29,6 @@ app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
 app.use(flash());
-app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index); // Instalar MWs routers que atienden a las rutas específicas
 
