@@ -38,11 +38,6 @@ router.get(/(?!\/new$|\/edit$|\/play$|\/check$|\/session$|\/(\d+)$)\/[^\/]*$/, f
 //-----------------------------------------------------------
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index');
-var router = express.Router(); // Un router de express es un MW que permite agrupar otros MWs de atención a rutas
-
-/* GET home page. */
 router.get('/', function(req, res, next) {
     res.render('index', { title: 'Quiz' });
 });
