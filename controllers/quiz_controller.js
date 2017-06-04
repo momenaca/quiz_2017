@@ -2,6 +2,8 @@ var models = require("../models");
 var Sequelize = require('sequelize');
 
 var paginate = require('../helpers/paginate').paginate;
+var array = [];
+var session;
 
 // Autoload el quiz asociado a :quizId
 exports.load = function (req, res, next, quizId) {
@@ -23,7 +25,7 @@ exports.load = function (req, res, next, quizId) {
 
 // GET /quizzes
 exports.index = function (req, res, next) {
-
+    array.splice(0,array.length);
     var countOptions = {};
 
     // Busquedas:
@@ -187,3 +189,84 @@ exports.check = function (req, res, next) {
         answer: answer
     });
 };
+
+// GET /randomplay
+exports.randomplay = function (req, res, next) {
+    session = req.session;
+
+    models.Quiz.count()
+        .then(function (count) {
+            if(array.length == count) {
+                res.render('quizzes/randomnomore',{
+                    score: array.length
+                })
+            }
+            else {
+                if(!session.Id){
+                    quizId = 1; // Primer quiz
+                }
+                else{
+                    //console.log("PRIMERA TRAZA 1   "+quizId);
+                    var numValid = false;
+                    var i = 0;
+                    while(!numValid){ // Hasta que no sea un número válido no pasamos
+                        if(i == count || array.length == 0) {
+                            numValid = true;
+                        }
+                        else if(quizId == array[i]) {
+                            quizId = Math.floor(Math.random()*count) + 1;
+                            //console.log("PRIMERA TRAZA 2  "+quizId);
+                            i = 0;
+                        }
+                        else {
+                            //console.log("ARRAY: " + array[i]);
+                            i++;
+                        }
+                    }
+                    //console.log("PRIMERA TRAZA 3  "+quizId);
+                }
+
+                session.Id = quizId; // Guardamos el quizId
+
+                models.Quiz.findById(quizId)
+                    .then(function (quiz) {
+                        if (quiz) {
+                            res.render('quizzes/randomplay',{
+                                quiz: quiz,
+                                score: array.length
+                            });
+                        } else {
+                            throw new Error('No existe ningún quiz con id=' + quizId);
+                        }
+                    })
+            }
+        })
+};
+
+// GET /quizzes/randomcheck/:quizId
+exports.randomcheck = function (req, res, next) {
+    var result = false;
+    models.Quiz.findById(req.params.quizId)
+        .then(function (quiz) {
+            if (quiz) {
+                if(quiz.answer === req.query.answer) {
+                    result = true;
+                    //console.log("SEGUNDA TRAZA   "+session.Id);
+                    array.push(session.Id);
+                }
+                res.render('quizzes/randomresult',{
+                    score: array.length,
+                    result: result,
+                    answer: req.query.answer
+                })
+            } else {
+                throw new Error('No existe ningún quiz con id= ' + req.params.quizId);
+            }
+        })
+};
+
+//GET /pruebas
+exports.sesiones = function (req, res, next) {
+    res.write(array.toString());
+    res.end();
+}
