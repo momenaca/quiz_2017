@@ -14,9 +14,6 @@ router.all('*',sessionController.deleteExpiredUserSession);
 
 //-----------------------------------------------------------
 
-
-//-----------------------------------------------------------
-
 // History
 
 function redirectBack(req, res, next) {

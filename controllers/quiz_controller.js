@@ -9,10 +9,12 @@ var session;
 exports.load = function (req, res, next, quizId) {
 
     models.Quiz.findById(quizId, {
-        /*include: [
+        /*
+        include: [
             models.Tip,
             {model: models.User, as: 'Author'}
-        ]*/
+        ]
+        */
         include: [
             {model: models.Tip, include: [{model: models.User, as: 'Author'}]},
             {model: models.User, as: 'Author'}
@@ -49,14 +51,13 @@ exports.adminOrAuthorRequired = function(req, res, next){
 
 // GET /quizzes
 exports.index = function (req, res, next) {
+    array.splice(0,array.length); // Vaciamos array de quizzes ya respondidos
 
     var countOptions = {
         where: {}
     };
 
     var title = "Preguntas";
-    array.splice(0,array.length);
-    var countOptions = {};
 
     // Busquedas:
     var search = req.query.search || '';
@@ -207,7 +208,6 @@ exports.destroy = function (req, res, next) {
 
 // GET /quizzes/:quizId/play
 exports.play = function (req, res, next) {
-
     var answer = req.query.answer || '';
 
     res.render('quizzes/play', {

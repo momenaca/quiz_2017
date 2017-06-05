@@ -10,8 +10,8 @@
     <% if (accepted || isAdmin || isQuizAuthor) { %>
 
         <li>
-            <small> (by <%= quiz.tip.Author ? quiz.tip.Author.username : "Anómino" %>) </small>
             <%= tip.text %>
+            <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
 
             <% if (!accepted && (isAdmin || isQuizAuthor)) { %>
 

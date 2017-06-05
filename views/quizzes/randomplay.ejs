@@ -17,4 +17,18 @@
         <input type="text" class="itemWide" id="answer" name="answer" value="" placeholder="Respuesta" autocomplete="off"/>
         <input type="submit" class="itemNarrow" id="send" value="Comprobar">
     </div>
+
+    <button type="submit" class="itemNarrow" id="help">Ayuda</button>
+
+    <h1>
+        Pistas:
+    </h1>
+    <% var tips = quiz.Tips; %>
+    <% for (var i in tips) { %>
+    <% var tip = tips[i]; %>
+    <li>
+        <%= tip.text %>
+        <small> (by OME) </small>
+    </li>
+    <% } %>
 </form>
