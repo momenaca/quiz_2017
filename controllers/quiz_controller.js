@@ -9,12 +9,6 @@ var session;
 exports.load = function (req, res, next, quizId) {
 
     models.Quiz.findById(quizId, {
-        /*
-        include: [
-            models.Tip,
-            {model: models.User, as: 'Author'}
-        ]
-        */
         include: [
             {model: models.Tip, include: [{model: models.User, as: 'Author'}]},
             {model: models.User, as: 'Author'}
@@ -231,57 +225,65 @@ exports.check = function (req, res, next) {
     });
 };
 
-// GET /randomplay
-exports.randomplay = function (req, res, next) {
+exports.randomValidNumber = function (req, res, next) {
     session = req.session;
     models.Quiz.count()
         .then(function (count) {
-            if(array.length == count) {
+            req.length = count;
+            req.quizId = Math.floor(Math.random()*count) + 1;
+            if(array.length == req.length) {
                 res.render('quizzes/randomnomore',{
                     score: array.length
                 })
             }
             else {
-                if(!session.Id){
-                    quizId = Math.floor(Math.random()*count) + 1; // Primer quiz
-                }
-                else{
-                    //console.log("PRIMERA TRAZA 1   "+quizId);
-                    var numValid = false;
-                    var i = 0;
-                    while(!numValid){ // Hasta que no sea un número válido no pasamos
-                        if(i == count || array.length == 0) {
-                            numValid = true;
-                        }
-                        else if(quizId == array[i]) {
-                            quizId = Math.floor(Math.random()*count) + 1;
-                            //console.log("PRIMERA TRAZA 2  "+quizId);
-                            i = 0;
-                        }
-                        else {
-                            //console.log("ARRAY: " + array[i]);
-                            i++;
-                        }
+                var numValid = false;
+                var i = 0;
+                while (!numValid) { // Hasta que no sea un número válido no pasamos
+                    if (i == req.length || array.length == 0) {
+                        numValid = true;
                     }
-                    //console.log("PRIMERA TRAZA 3  "+quizId);
+                    else if (req.quizId == array[i]) {
+                        req.quizId = Math.floor(Math.random() * count) + 1;
+                        i = 0;
+                    }
+                    else {
+                        i++;
+                    }
                 }
+            }
+            session.Id = req.quizId; // Guardamos el quizId
+            next();
+        })
+        .catch(function (error) {
+            req.flash('error', 'Error al crear el número aleatorio: ' + error.message);
+            next(error);
+        });
+    };
 
-                session.Id = quizId; // Guardamos el quizId
-
-                models.Quiz.findById(quizId)
-                    .then(function (quiz) {
-                        if (quiz) {
-                            res.render('quizzes/randomplay',{
-                                quiz: quiz,
-                                score: array.length
-                            });
-                        } else {
-                            throw new Error('No existe ningún quiz con id=' + quizId);
-                        }
+// GET /randomplay
+exports.randomplay = function (req, res, next) {
+    models.Quiz.findById(req.quizId)
+        .then(function (quiz) {
+            if (quiz) {
+                models.Tip.findAll({
+                    where: {
+                        QuizId: req.quizId
+                    }
+                })
+                    .then(function (tips) {
+                        res.render('quizzes/randomplay', {
+                            quiz: quiz,
+                            score: array.length,
+                            Tips: tips
+                        });
                     })
             }
-        })
-};
+            else {
+                throw new Error('No existe ningún quiz con id=' + req.quizId);
+            }
+        });
+    };
 
 // GET /quizzes/randomcheck/:quizId
 exports.randomcheck = function (req, res, next) {
@@ -293,7 +295,6 @@ exports.randomcheck = function (req, res, next) {
                 if(quiz.answer === req.query.answer) {
                     result = true;
                     if(session && session.Id) {
-                        //console.log("SEGUNDA TRAZA   " + session.Id);
                         array.push(session.Id);
                     }
                     else {
@@ -312,10 +313,23 @@ exports.randomcheck = function (req, res, next) {
                 throw new Error('No existe ningún quiz con id= ' + req.params.quizId);
             }
         })
-};
+    };
 
 //GET /pruebas
 exports.sesiones = function (req, res, next) {
-    res.write(array.toString());
-    res.end();
-}
+    models.Tip.findAll({
+        where: {
+            QuizId: 5
+        }
+    })
+        .then(function (tips) {
+            if(tips) {
+                res.render('quizzes/pruebas',{
+                    Tips: tips
+                });
+            }
+            else {
+                throw new Error('No existe ningún quiz con id=' + quizId);
+            }
+})
+};

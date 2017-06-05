@@ -17,18 +17,25 @@
         <input type="text" class="itemWide" id="answer" name="answer" value="" placeholder="Respuesta" autocomplete="off"/>
         <input type="submit" class="itemNarrow" id="send" value="Comprobar">
     </div>
+    <p>
 
-    <button type="submit" class="itemNarrow" id="help">Ayuda</button>
+    </p>
 
     <h1>
         Pistas:
     </h1>
-    <% var tips = quiz.Tips; %>
-    <% for (var i in tips) { %>
-    <% var tip = tips[i]; %>
+
+    <% if (Tips && Tips.length != 0) { %>
+    <% for (var i in Tips) { %>
+    <% var tip = Tips[i]; %>
     <li>
         <%= tip.text %>
-        <small> (by OME) </small>
+        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
     </li>
     <% } %>
+    <% } %>
+    <% if (!Tips || Tips == 0) { %>
+    <p>Lo sentimos, no hay ninguna pista disponible.</p>
+    <% } %>
+
 </form>

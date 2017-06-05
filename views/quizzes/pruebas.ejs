@@ -2,3 +2,19 @@
     PRUEBAS:
 </h1>
 
+<% if(Tips.length != 0) {%>
+<% for (var i in Tips) { %>
+<% var tip = Tips[i];%>
+
+<li>
+    <%= tip.text %>
+</li>
+
+<% } %>
+<% } %>
+
+<% if(Tips.length == 0) {%>
+<p> FUNCIONA </p>
+<% } %>
+
+

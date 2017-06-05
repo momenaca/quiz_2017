@@ -10,26 +10,26 @@
 
     <% if (accepted || isAdmin || isQuizAuthor || isTipAuthor) { %>
 
-        <li>
-            <%= tip.text %>
-            <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
+    <li>
+        <%= tip.text %>
+        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
 
-            <% if (!accepted && (isAdmin || isQuizAuthor)) { %>
+        <% if (!accepted && (isAdmin || isQuizAuthor)) { %>
 
-                <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>/accept?_method=PUT">
-                        <button>Aceptar</button>
-                </a>
+        <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>/accept?_method=PUT">
+            <button>Aceptar</button>
+        </a>
 
-            <% } %>
+        <% } %>
 
-            <% if (isAdmin || isQuizAuthor || isTipAuthor) { %>
+        <% if (isAdmin || isQuizAuthor || isTipAuthor) { %>
 
-                <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>?_method=DELETE">
-                        <button>Borrar</button>
-                </a>
+        <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>?_method=DELETE">
+            <button>Borrar</button>
+        </a>
 
-            <% } %>
-        </li>
+        <% } %>
+    </li>
     <% } %>
 
     <% } %>

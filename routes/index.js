@@ -7,12 +7,12 @@ var tipController = require('../controllers/tip_controller');
 var userController = require('../controllers/user_controller');
 var sessionController = require('../controllers/session_controller');
 
-//-----------------------------------------------------------
+//**************************************************************
 
 // autologout
 router.all('*',sessionController.deleteExpiredUserSession);
 
-//-----------------------------------------------------------
+//**************************************************************
 
 // History
 
@@ -32,7 +32,7 @@ router.get(/(?!\/new$|\/edit$|\/play$|\/check$|\/session$|\/(\d+)$)\/[^\/]*$/, f
     next();
 });
 
-//-----------------------------------------------------------
+//**************************************************************
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -45,7 +45,7 @@ router.get('/author', function (req, res, next) {
 });
 
 // Pagina de juego
-router.get('/quizzes/randomplay', quizController.randomplay);
+router.get('/quizzes/randomplay', quizController.randomValidNumber, quizController.randomplay);
 
 // Pagina de verificacion
 router.get('/quizzes/randomcheck/:quizId', quizController.randomcheck);
@@ -53,17 +53,21 @@ router.get('/quizzes/randomcheck/:quizId', quizController.randomcheck);
 // Pagina de pruebas
 router.get('/quizzes/pruebas', quizController.sesiones);
 
+//**************************************************************
+
 // Autoload de rutas que usen :quizId
 router.param('quizId', quizController.load);
 router.param('userId', userController.load);
 router.param('tipId',  tipController.load);
 
+//**************************************************************
 
 // Definición de rutas de sesion
 router.get('/session', sessionController.new);     // formulario login
 router.post('/session', sessionController.create);  // crear sesión
 router.delete('/session', sessionController.destroy); // destruir sesión
 
+//**************************************************************
 
 // Definición de rutas de cuenta
 router.get('/users',
@@ -91,7 +95,7 @@ router.delete('/users/:userId(\\d+)',
 
 router.get('/users/:userId(\\d+)/quizzes', quizController.index);     // ver las preguntas de un usuario
 
-
+//**************************************************************
 
 // Definición de rutas de /quizzes
 router.get('/quizzes',
@@ -122,6 +126,8 @@ router.get('/quizzes/:quizId(\\d+)/play',
 router.get('/quizzes/:quizId(\\d+)/check',
     quizController.check);
 
+//**************************************************************
+
 // Definicion de rutas para los tips
 router.get('/quizzes/:quizId(\\d+)/tips/new',
     sessionController.loginRequired,
@@ -136,6 +142,8 @@ router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/accept',
 router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
     sessionController.loginRequired,
     tipController.destroy);
+
+//**************************************************************
 
 // Pagina de ayuda
 router.get('/help', function(req, res, next) {
