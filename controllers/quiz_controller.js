@@ -9,8 +9,12 @@ var session;
 exports.load = function (req, res, next, quizId) {
 
     models.Quiz.findById(quizId, {
-        include: [
+        /*include: [
             models.Tip,
+            {model: models.User, as: 'Author'}
+        ]*/
+        include: [
+            {model: models.Tip, include: [{model: models.User, as: 'Author'}]},
             {model: models.User, as: 'Author'}
         ]
     })
@@ -230,7 +234,6 @@ exports.check = function (req, res, next) {
 // GET /randomplay
 exports.randomplay = function (req, res, next) {
     session = req.session;
-
     models.Quiz.count()
         .then(function (count) {
             if(array.length == count) {
@@ -240,9 +243,7 @@ exports.randomplay = function (req, res, next) {
             }
             else {
                 if(!session.Id){
-                    console.log("EMPIEZO");
-                    quizId = Math.floor(Math.random()*count) + 1;
-                    //quizId = 1; // Primer quiz
+                    quizId = Math.floor(Math.random()*count) + 1; // Primer quiz
                 }
                 else{
                     //console.log("PRIMERA TRAZA 1   "+quizId);

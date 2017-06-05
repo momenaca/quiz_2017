@@ -1,4 +1,4 @@
-// Definicion del modelo Tips:
+ // Definicion del modelo Tips:
 
 module.exports = function (sequelize, DataTypes) {
     return sequelize.define('Tip',

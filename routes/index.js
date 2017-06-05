@@ -125,7 +125,7 @@ router.get('/quizzes/:quizId(\\d+)/play',
 router.get('/quizzes/:quizId(\\d+)/check',
     quizController.check);
 
-
+// Definicion de rutas para los tips
 router.get('/quizzes/:quizId(\\d+)/tips/new',
     sessionController.loginRequired,
     tipController.new);
