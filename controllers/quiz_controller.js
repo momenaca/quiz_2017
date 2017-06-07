@@ -298,7 +298,7 @@ exports.randomcheck = function (req, res, next) {
                         array.push(session.Id);
                     }
                     else {
-                        punt = 1;
+                        punt++;
                     }
                 }
                 if(!result){
@@ -317,19 +317,24 @@ exports.randomcheck = function (req, res, next) {
 
 //GET /pruebas
 exports.sesiones = function (req, res, next) {
+    var idprueba = 1;
     models.Tip.findAll({
         where: {
-            QuizId: 5
+            QuizId: idprueba
         }
     })
         .then(function (tips) {
             if(tips) {
-                res.render('quizzes/pruebas',{
-                    Tips: tips
-                });
+                models.User.findAll()
+                    .then(function (users) {
+                        res.render('quizzes/pruebas',{
+                            Tips: tips,
+                            Users: users
+                        });
+                    })
             }
             else {
-                throw new Error('No existe ningún quiz con id=' + quizId);
+                throw new Error('No existe ningún quiz con id=' + idprueba);
             }
 })
 };

@@ -8,11 +8,11 @@
     <% var isQuizAuthor = session.user && quizAuthorId && quizAuthorId === session.user.id; %>
     <% var isTipAuthor = session.user && tip.AuthorId && tip.AuthorId === session.user.id; %>
 
-    <% if (accepted || isAdmin || isQuizAuthor || isTipAuthor) { %>
+    <% if (accepted || isAdmin || isQuizAuthor) { %>
 
     <li>
         <%= tip.text %>
-        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
+        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anónimo" %>) </span>
 
         <% if (!accepted && (isAdmin || isQuizAuthor)) { %>
 
@@ -22,7 +22,7 @@
 
         <% } %>
 
-        <% if (isAdmin || isQuizAuthor || isTipAuthor) { %>
+        <% if (isAdmin || isQuizAuthor) { %>
 
         <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>?_method=DELETE">
             <button>Borrar</button>

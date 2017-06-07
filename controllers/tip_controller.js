@@ -99,3 +99,30 @@ exports.destroy = function (req, res, next) {
         next(error);
     });
 };
+
+// GET /tips/notaccepted
+exports.notaccepted = function(req ,res ,next) {
+    models.Tip.findAll({
+        where: {
+            accepted: false
+        }
+    })
+        .then(function (tips) {
+            models.Quiz.findAll()
+                .then(function (quizzes) {
+                    res.render('tips/notaccepted',{
+                        tips : tips,
+                        quizzes: quizzes
+                    })
+                })
+                .catch(function (error) {
+                    req.flash('error', 'Error al buscar quizzes: ' + error.message);
+                    next(error);
+                });
+        })
+        .catch(function (error) {
+            req.flash('error', 'Error al buscar pistas sin aceptar: ' + error.message);
+            next(error);
+        });
+
+}

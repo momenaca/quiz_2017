@@ -8,13 +8,15 @@
 
 <li>
     <%= tip.text %>
+    <% if(Users) {%>
+    <%= Users[tip.AuthorId-1].username %>
+    <% } %>
+    <% if(!Users) {%>
+    <%= "NULL" %>
+    <% } %>
 </li>
 
 <% } %>
-<% } %>
-
-<% if(Tips.length == 0) {%>
-<p> FUNCIONA </p>
 <% } %>
 
 

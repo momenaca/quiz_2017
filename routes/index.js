@@ -53,6 +53,9 @@ router.get('/quizzes/randomcheck/:quizId', quizController.randomcheck);
 // Pagina de pruebas
 router.get('/quizzes/pruebas', quizController.sesiones);
 
+// Pagina de tips sin aceptar
+router.get('/tips/notaccepted', sessionController.loginRequired, sessionController.adminRequired, tipController.notaccepted);
+
 //**************************************************************
 
 // Autoload de rutas que usen :quizId
