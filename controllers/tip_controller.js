@@ -106,7 +106,8 @@ exports.notaccepted = function(req ,res ,next) {
     models.Tip.findAll({
         where: {
             accepted: false
-        }
+        },
+        include: [ {model: models.User, as: 'Author'} ]
     })
         .then(function (tips) {
 
