@@ -51,10 +51,10 @@ router.get('/quizzes/randomplay', quizController.randomValidNumber, quizControll
 router.get('/quizzes/randomcheck/:quizId', quizController.randomcheck);
 
 // Pagina de pruebas
-router.get('/quizzes/pruebas', quizController.sesiones);
+router.get('/quizzes/pruebas', sessionController.adminRequired, quizController.pruebas);
 
 // Pagina de tips sin aceptar
-router.get('/tips/notaccepted', sessionController.loginRequired, sessionController.adminRequired, tipController.notaccepted);
+router.get('/tips/notaccepted', sessionController.loginRequired , tipController.notaccepted);
 
 //**************************************************************
 

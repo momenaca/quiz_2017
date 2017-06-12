@@ -9,7 +9,7 @@
 <form method="get" action="/quizzes/randomcheck/<%= quiz.id %>">
 
     <p>
-        Pregunta: <b><%= quiz.question %></b>
+        Pregunta: <b><%= quiz.question %></b> (by <%= quiz.Author ? quiz.Author.username : "Anónimo" %>)
     </p>
 
 
@@ -21,21 +21,45 @@
 
     </p>
 
+    <script type="text/javascript">
+    function pistas() {
+        document.getElementById("pistas").style.display = "block";
+    }
+
+    </script>
+
+    <button type="button" onclick="pistas()">Pista</button>
+
+    <div id="pistas" style="display: none">
+
     <h1>
         Pistas:
     </h1>
 
-    <% if (Tips && Tips.length != 0) { %>
-    <% for (var i in Tips) { %>
-    <% var tip = Tips[i]; %>
-    <li>
-        <%= tip.text %>
-        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anómino" %>) </span>
-    </li>
+        <% var notacc = 0;%>
+        <% if (quiz.Tips && quiz.Tips.length != 0) { %>
+            <% for (var i in quiz.Tips) { %>
+
+            <% var tip = quiz.Tips[i]; %>
+
+            <% if(tip.accepted) { %>
+                <li>
+                    <%= tip.text %>
+                    <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anónimo" %>) </span>
+                </li>
+
+            <% } else { %>
+            <% notacc++; %>
+
+            <% } %>
+        <% } %>
     <% } %>
-    <% } %>
-    <% if (!Tips || Tips == 0) { %>
-    <p>Lo sentimos, no hay ninguna pista disponible.</p>
-    <% } %>
+
+        <% if(notacc == quiz.Tips.length || quiz.Tips.length == 0) { %>
+        <p>
+            Lo sentimos, no hay ninguna pista disponible.
+        </p>
+        <% } %>
+    </div>
 
 </form>

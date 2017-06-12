@@ -2,21 +2,20 @@
     PRUEBAS:
 </h1>
 
-<% if(Tips.length != 0) {%>
-<% for (var i in Tips) { %>
-<% var tip = Tips[i];%>
+<%= score %>
 
-<li>
-    <%= tip.text %>
-    <% if(Users) {%>
-    <%= Users[tip.AuthorId-1].username %>
-    <% } %>
-    <% if(!Users) {%>
-    <%= "NULL" %>
-    <% } %>
+
+<script type="text/javascript">
+    function prueba() {
+        score--;
+    }
+
+</script>
+
+<button type="button" onclick="prueba()">Pista</button>
+
+
 </li>
 
-<% } %>
-<% } %>
 
 

@@ -1,32 +1,50 @@
 <h1>
     Pistas pendientes de ser aceptadas:
 </h1>
+    <% if(tips.length != 0) { %>
 
-    <% if(tips.length !=0 && quizzes.length !=0) {%>
-    <% for (var i in tips) { %>
-    <% var tip = tips[i]; %>
-    <% var quizId = quizzes[tip.QuizId-1]%>
+        <% for (var i in tips) { %>
 
-    <li>
-        <%= tip.text %>
-        <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anónimo" %>) </span>
+        <% var tip = tips[i]; %>
+        <% var quiz = quizzes[tip.QuizId-1]; %>
+        <% var isAdmin = session.user && session.user.isAdmin; %>
+        <% var isQuizAuthor = session.user && quiz.AuthorId && quiz.AuthorId === session.user.id; %>
+        <% var isTipAuthor = session.user && tip.AuthorId && tip.AuthorId === session.user.id; %>
 
-        <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>/accept?_method=PUT">
-            <button>Aceptar</button>
-        </a>
+        <% if(isAdmin || isQuizAuthor || isTipAuthor) { %>
 
-        <a href="/quizzes/<%= quizId %>/tips/<%= tip.id %>?_method=DELETE">
-            <button>Borrar</button>
-        </a>
+        <li>
+            <%= tip.text %>
+            <span id="autor"> (by <%= tip.Author ? tip.Author.username : "Anónimo" %>) </span>
 
-    </li>
+            <% if (isAdmin || isQuizAuthor) { %>
+
+            <a href="/quizzes/<%= tip.QuizId %>/tips/<%= tip.id %>/accept?_method=PUT">
+                <button>Aceptar</button>
+            </a>
+
+            <% } %>
+
+            <% if (isAdmin || isQuizAuthor || isTipAuthor) { %>
+
+            <a href="/quizzes/<%= tip.QuizId %>/tips/<%= tip.id %>?_method=DELETE">
+                <button>Borrar</button>
+            </a>
+
+            <% } %>
+        </li>
+
+        <% } %>
+
+        <% } %>
     <% } %>
-<% } %>
 
-    <% if(tips.length == 0) {%>
-    <p>
-        No hay ninguna pista pendiente de ser aceptada.
-    </p>
+    <% if(tips.length == 0 || !(isAdmin || isQuizAuthor || isTipAuthor)) { %>
+
+        <p>
+            No hay ninguna pista sin aceptar.
+        </p>
+
     <% } %>
 
 </ul>

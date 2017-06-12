@@ -1,8 +1,7 @@
-
 <ul>
     <% for (var i in tips) { %>
-    <% var tip = tips[i]; %>
 
+    <% var tip = tips[i]; %>
     <% var accepted = tip.accepted; %>
     <% var isAdmin = session.user && session.user.isAdmin; %>
     <% var isQuizAuthor = session.user && quizAuthorId && quizAuthorId === session.user.id; %>
@@ -30,7 +29,9 @@
 
         <% } %>
     </li>
+
     <% } %>
 
     <% } %>
+
 </ul>

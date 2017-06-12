@@ -78,7 +78,7 @@ exports.accept = function (req, res, next) {
     req.tip.save(["accepted"])
     .then(function (tip) {
         req.flash('success', 'Pista aceptada con éxito.');
-        res.redirect('/quizzes/' + req.params.quizId);
+        res.redirect("back");
     })
     .catch(function (error) {
         req.flash('error', 'Error al aceptar una Pista: ' + error.message);
@@ -93,7 +93,7 @@ exports.destroy = function (req, res, next) {
     req.tip.destroy()
     .then(function () {
         req.flash('success', 'Pista eliminada con éxito.');
-        res.redirect('/quizzes/' + req.params.quizId);
+        res.redirect("back");
     })
     .catch(function (error) {
         next(error);
@@ -102,27 +102,30 @@ exports.destroy = function (req, res, next) {
 
 // GET /tips/notaccepted
 exports.notaccepted = function(req ,res ,next) {
+
     models.Tip.findAll({
         where: {
             accepted: false
         }
     })
         .then(function (tips) {
-            models.Quiz.findAll()
-                .then(function (quizzes) {
-                    res.render('tips/notaccepted',{
-                        tips : tips,
-                        quizzes: quizzes
+
+            if (tips) {
+                models.Quiz.findAll()
+                    .then(function (quizzes) {
+
+                        if(quizzes){
+                            res.render('tips/notaccepted', {
+                                tips: tips,
+                                quizzes:quizzes
+                            });
+                        }
                     })
-                })
-                .catch(function (error) {
-                    req.flash('error', 'Error al buscar quizzes: ' + error.message);
-                    next(error);
-                });
+            } else {
+                throw new Error('No existen pistas sin aceptar');
+            }
         })
         .catch(function (error) {
-            req.flash('error', 'Error al buscar pistas sin aceptar: ' + error.message);
             next(error);
         });
-
-}
+};

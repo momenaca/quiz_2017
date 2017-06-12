@@ -2,7 +2,8 @@ var models = require("../models");
 var Sequelize = require('sequelize');
 
 var paginate = require('../helpers/paginate').paginate;
-var array = [];
+
+var array = []; //
 var session;
 
 // Autoload el quiz asociado a :quizId
@@ -202,6 +203,7 @@ exports.destroy = function (req, res, next) {
 
 // GET /quizzes/:quizId/play
 exports.play = function (req, res, next) {
+
     var answer = req.query.answer || '';
 
     res.render('quizzes/play', {
@@ -225,85 +227,100 @@ exports.check = function (req, res, next) {
     });
 };
 
+// Busca un QuizId válido para poder jugar en GET /quizzes/randomplay
 exports.randomValidNumber = function (req, res, next) {
+
     session = req.session;
+
     models.Quiz.count()
         .then(function (count) {
-            req.length = count;
-            req.quizId = Math.floor(Math.random()*count) + 1;
-            if(array.length == req.length) {
-                res.render('quizzes/randomnomore',{
-                    score: array.length
-                })
-            }
-            else {
-                var numValid = false;
-                var i = 0;
-                while (!numValid) { // Hasta que no sea un número válido no pasamos
-                    if (i == req.length || array.length == 0) {
-                        numValid = true;
-                    }
-                    else if (req.quizId == array[i]) {
-                        req.quizId = Math.floor(Math.random() * count) + 1;
-                        i = 0;
-                    }
-                    else {
-                        i++;
+            if(count) {
+
+                req.length = count;
+                req.quizId = Math.floor(Math.random() * count) + 1;
+
+                if (array.length === req.length) { // No hay mas preguntas, el jugador ha ganado
+                    res.render('quizzes/randomnomore', {
+                        score: array.length
+                    })
+                }
+                else {
+
+                    var numValid = false;
+
+                    var i = 0;
+
+                    while (!numValid) { // Hasta que no sea un número válido no pasamos
+                        if (i === req.length || array.length === 0) {
+                            numValid = true;
+                        }
+                        else if (req.quizId === array[i]) {
+                            req.quizId = Math.floor(Math.random() * count) + 1;
+                            i = 0;
+                        }
+                        else {
+                            i++;
+                        }
                     }
                 }
+
+                session.Id = req.quizId; // Guardamos el quizId
+
+                next();
+            } else {
+                throw new Error('No ha sido posible contar los quizzes.');
             }
-            session.Id = req.quizId; // Guardamos el quizId
-            next();
         })
         .catch(function (error) {
-            req.flash('error', 'Error al crear el número aleatorio: ' + error.message);
             next(error);
         });
-    };
+};
 
 // GET /randomplay
 exports.randomplay = function (req, res, next) {
-    models.Quiz.findById(req.quizId)
+
+    models.Quiz.findById(req.quizId, {
+        include: [
+            {model: models.Tip, include: [{model: models.User, as: 'Author'}]},
+            {model: models.User, as: 'Author'}
+        ]
+    })
         .then(function (quiz) {
-            if (quiz) {
-                models.Tip.findAll({
-                    where: {
-                        QuizId: req.quizId
-                    }
-                })
-                    .then(function (tips) {
-                        res.render('quizzes/randomplay', {
-                            quiz: quiz,
-                            score: array.length,
-                            Tips: tips
-                        });
-                    })
-            }
-            else {
+            if(quiz) {
+                res.render('quizzes/randomplay', {
+                    quiz: quiz,
+                    score: array.length,
+                });
+            } else {
                 throw new Error('No existe ningún quiz con id=' + req.quizId);
             }
+        })
+        .catch(function (error) {
+            next(error);
         });
-    };
+};
 
 // GET /quizzes/randomcheck/:quizId
 exports.randomcheck = function (req, res, next) {
-    var result = false;
+
     var punt = 0;
+
     models.Quiz.findById(req.params.quizId)
         .then(function (quiz) {
             if (quiz) {
-                if(quiz.answer === req.query.answer) {
-                    result = true;
-                    if(session && session.Id) {
-                        array.push(session.Id);
-                    }
-                    else {
-                        punt++;
-                    }
+
+                var result = req.query.answer.toLowerCase().trim() === req.quiz.answer.toLowerCase().trim();
+
+                if(session && session.Id && result) {
+                    array.push(session.Id);
                 }
-                if(!result){
-                    array.splice(0,array.length);
+                else if(result) { // Corrector se salta el randomplay
+                    punt++;
                 }
+                else if(!result){
+                    array.splice(0,array.length); // El jugador ha perdido
+                }
+
                 res.render('quizzes/randomresult',{
                     score: session ? array.length : punt,
                     result: result,
@@ -313,28 +330,15 @@ exports.randomcheck = function (req, res, next) {
                 throw new Error('No existe ningún quiz con id= ' + req.params.quizId);
             }
         })
-    };
+        .catch(function (error) {
+            next(error);
+        });
+};
 
 //GET /pruebas
-exports.sesiones = function (req, res, next) {
-    var idprueba = 1;
-    models.Tip.findAll({
-        where: {
-            QuizId: idprueba
-        }
-    })
-        .then(function (tips) {
-            if(tips) {
-                models.User.findAll()
-                    .then(function (users) {
-                        res.render('quizzes/pruebas',{
-                            Tips: tips,
-                            Users: users
-                        });
-                    })
-            }
-            else {
-                throw new Error('No existe ningún quiz con id=' + idprueba);
-            }
-})
+exports.pruebas = function (req, res, next) {
+
+    res.render('quizzes/pruebas', {
+        score: array.length
+    });
 };
